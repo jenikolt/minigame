@@ -7,7 +7,6 @@ export class GameScene extends Phaser.Scene {
     bottles: any;
     brokenBottles: any;
     score: any;
-    scoreText: any;
     missedBottles!: number | 0;
     missedBottleImages: any;
     bottleBreakSound: any;
@@ -27,13 +26,13 @@ export class GameScene extends Phaser.Scene {
         this.load.image('pub', 'src/assets/bg.png');
         this.load.image('bottle', 'src/assets/pivo1.png');
         this.load.image('brokenBottle', 'src/assets/pivo5.png');
+        this.load.image('brokenBottleBlazer', 'src/assets/crushedblazer.png');
         this.load.image('greenBottle', 'src/assets/pivo2.png');
-        this.load.image('blackBottle', 'src/assets/pivo3.png');
-        this.load.image('redBottle', 'src/assets/pivo4.png');
+        this.load.image('blackBottle', 'src/assets/blazer_.png');
         this.load.image('burger', 'src/assets/burger.png');
         this.load.audio('bottleBreak', 'src/assets/PullBottle.mp3');
         this.load.audio('bottleCatch', 'src/assets/PullOut.mp3');
-        this.load.spritesheet(`${this.character}_spritesheet`, `src/assets/${this.character}_spritesheet.png`, { frameWidth: 211, frameHeight: 199 });
+        this.load.spritesheet( this.keySprite, `src/assets/${this.keySprite}.png`, { frameWidth: 211, frameHeight: 199 });
         this.load.spritesheet('fillcup', 'src/assets/fillcup.png', { frameWidth: 370, frameHeight: 595 });
     }
   
@@ -45,21 +44,13 @@ export class GameScene extends Phaser.Scene {
         this.add.image(505, 284, 'pub').setDisplaySize(1010, 568);
         this.score = 0;
         this.floor = this.physics.add.staticBody(0, 560, 1010, 8);
-        this.fillcup = this.add.sprite(880, 350, 'fillcup').setScale(0.7);
+        this.fillcup = this.add.sprite(900, 350, 'fillcup').setScale(0.5);
         this.player = this.physics.add.sprite(400, 550, this.keySprite).setScale(0.7);
         this.player.setCollideWorldBounds(true);
   
         this.anims.create({
-            key: 'right',
+            key: 'turn',
             frames: this.anims.generateFrameNumbers(this.keySprite, { start: 0, end: 3 }),
-            frameRate: 10,
-            yoyo: true,
-            repeat: 1
-        });
-  
-        this.anims.create({
-            key: 'left',
-            frames: this.anims.generateFrameNumbers(this.keySprite, { start: 4, end: 7 }),
             frameRate: 10,
             yoyo: true,
             repeat: 1
@@ -77,22 +68,20 @@ export class GameScene extends Phaser.Scene {
   
         this.physics.add.overlap(this.player, this.bottles, this.collectBottle, undefined, this);
         this.physics.add.overlap(this.floor, this.bottles, this.bottleHitGround, undefined, this);
-        
-        this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', color: '#fff' });
   
         this.missedBottles = 0;
         this.missedBottleImages = [];
         for (let i = 0; i < 3; i++) {
-            this.missedBottleImages.push(this.add.image(750 - i * 50, 50, 'burger').setScale(0.5));
+            this.missedBottleImages.push(this.add.image(50, 250 - i * 50, 'burger').setScale(0.5));
         }
   
         this.input.on('pointermove', (pointer: { x: number; }) => {    
             if (this.player.x < pointer.x) {
-                this.player.anims.play('right', this);
-                // this.player.setFlipX(false);
-            } else if (this.player.x > pointer.x) {
-                this.player.anims.play('left', this);
-                // this.player.setFlipX(true);
+                this.player.anims.play('turn', this);
+                this.player.setFlipX(false);
+            } else {
+                this.player.anims.play('turn', this);
+                this.player.setFlipX(true);
             }
             this.player.x = Phaser.Math.Clamp(pointer.x, 0, 800);
         });
@@ -153,7 +142,6 @@ export class GameScene extends Phaser.Scene {
             this.endGame('Game Over');
         } else {
             this.score++;
-            this.scoreText.setText('Score: ' + this.score);
             this.setFillCup();
             if (this.score >= 14) {
               this.endGame('You Win!');
@@ -172,8 +160,9 @@ export class GameScene extends Phaser.Scene {
                 console.error('Error playing bottleBreakSound:', error);
             }
         }
-  
-        const brokenBottle = this.add.image(bottle.x, 560, 'brokenBottle').setScale(0.5);
+
+        const brokenBottleType = bottle.getData('type') === 'loss' ? 'brokenBottleBlazer' : 'brokenBottle';
+        const brokenBottle = this.add.image(bottle.x, 560, brokenBottleType).setScale(0.5).setAngle(Phaser.Math.Between(0, 180));    
         this.brokenBottles.add(brokenBottle);
   
         this.missedBottles++;
