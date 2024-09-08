@@ -13,7 +13,8 @@ export class GameScene extends Phaser.Scene {
     bottleBreakSound: any;
     bottleCatchSound: any;
     floor: any;
-    fillcup: any
+    fillcup: any;
+    igor: Phaser.Sound.BaseSound | undefined;
     constructor() {
         super('GameScene');
     }
@@ -31,8 +32,9 @@ export class GameScene extends Phaser.Scene {
         this.load.image('greenBottle', 'src/assets/pivo2.png');
         this.load.image('blackBottle', 'src/assets/blazer_.png');
         this.load.image('burger', 'src/assets/burger.png');
-        this.load.audio('bottleBreak', 'src/assets/PullBottle.mp3');
-        this.load.audio('bottleCatch', 'src/assets/PullOut.mp3');
+        this.load.audio('bottleBreak', 'src/assets/pivoSlom.mp3');
+        this.load.audio('bottleCatch', 'src/assets/pivoNaliv.mp3');
+        this.load.audio('igornikolaev', 'src/assets/igornikolaev.mp3');
         this.load.spritesheet( this.keySprite, `src/assets/${this.keySprite}.png`, { frameWidth: 211, frameHeight: 199 });
         this.load.spritesheet('fillcup', 'src/assets/fillcup.png', { frameWidth: 370, frameHeight: 595 });
         this.load.image('progress', 'src/assets/progress.png');
@@ -43,6 +45,10 @@ export class GameScene extends Phaser.Scene {
     }
   
     create() {
+        this.igor = this.sound.add('igornikolaev').setVolume(0.2);
+        if (this.character === 'character3') {
+            this.igor.play();
+        }
         this.add.image(505, 284, 'pub').setDisplaySize(1010, 568);
         this.score = 0;
         this.floor = this.physics.add.staticBody(0, 560, 1010, 8);
@@ -177,6 +183,7 @@ export class GameScene extends Phaser.Scene {
     endGame(message: 'loss' | 'win') {
         this.time.removeAllEvents();
         this.physics.pause();
+        this.igor?.stop();
 
         if (message === 'loss') {
             this.cameras.main.fade(300, 0, 0, 0, false, (_camera: any, progress: number) => {
