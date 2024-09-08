@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 
 export class GameScene extends Phaser.Scene {
     character: any;
+    progress: any;
     keySprite: any;
     player: any;
     bottles: any;
@@ -35,6 +36,7 @@ export class GameScene extends Phaser.Scene {
         this.load.audio('bottleCatch', 'src/assets/PullOut.mp3');
         this.load.spritesheet(`${this.character}_spritesheet`, `src/assets/${this.character}_spritesheet.png`, { frameWidth: 211, frameHeight: 199 });
         this.load.spritesheet('fillcup', 'src/assets/fillcup.png', { frameWidth: 370, frameHeight: 595 });
+        this.load.spritesheet('progress', 'src/assets/progress.png', { frameWidth: 370, frameHeight: 595 });
     }
   
     setFillCup() {
@@ -45,7 +47,8 @@ export class GameScene extends Phaser.Scene {
         this.add.image(505, 284, 'pub').setDisplaySize(1010, 568);
         this.score = 0;
         this.floor = this.physics.add.staticBody(0, 560, 1010, 8);
-        this.fillcup = this.add.sprite(880, 350, 'fillcup').setScale(0.7);
+        this.fillcup = this.add.sprite(900, 200, 'fillcup').setScale(0.3);
+        this.progress = this.add.sprite(900, 300, 'progress').setScale(0.5);
         this.player = this.physics.add.sprite(400, 550, this.keySprite).setScale(0.7);
         this.player.setCollideWorldBounds(true);
   
