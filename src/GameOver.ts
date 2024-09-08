@@ -10,11 +10,13 @@ export class GameOver extends Phaser.Scene {
     this.load.image("pub", "src/assets/bg.png");
     this.load.image("gameOverBtn", "src/assets/gameOverBtn.png");
     this.load.image("gameOver", "src/assets/gameOver.png");
+    this.load.image("fox", "src/assets/fox.png");
   }
 
   create() {
     this.add.image(505, 284, "pub").setDisplaySize(1010, 568);
     this.add.image(505, 104, "gameOver");
+    this.add.image(160, 340, "fox").setScale(0.08);
 
     this.btn = this.add.sprite(500, 300, "gameOverBtn").setScale(0.5).setInteractive();
 
