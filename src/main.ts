@@ -1,4 +1,3 @@
-import './style.css'
 import Phaser from 'phaser'
 import { CharacterSelection } from './CharacterSelection'
 import { GameScene } from './GameScene'
