@@ -52,7 +52,7 @@ export class GameScene extends Phaser.Scene {
         this.player.setCollideWorldBounds(true);
   
         this.anims.create({
-            key: 'turn',
+            key: 'turn'+this.keySprite,
             frames: this.anims.generateFrameNumbers(this.keySprite, { start: 0, end: 3 }),
             frameRate: 10,
             yoyo: true,
@@ -80,10 +80,10 @@ export class GameScene extends Phaser.Scene {
   
         this.input.on('pointermove', (pointer: { x: number; }) => {    
             if (this.player.x < pointer.x) {
-                this.player.anims.play('turn', this);
+                this.player.anims.play('turn'+this.keySprite, this);
                 this.player.setFlipX(false);
             } else {
-                this.player.anims.play('turn', this);
+                this.player.anims.play('turn'+this.keySprite, this);
                 this.player.setFlipX(true);
             }
             this.player.x = Phaser.Math.Clamp(pointer.x, 0, 800);
