@@ -193,6 +193,10 @@ export class GameScene extends Phaser.Scene {
         this.time.removeAllEvents();
         this.physics.pause();
         this.add.text(400, 300, message, { fontSize: '64px', color: '#fff' }).setOrigin(0.5);
+
+        if (message === 'Game Over') {
+            this.scene.start('GameOver');
+        }
   
         this.time.delayedCall(10000, () => {
             this.cameras.main.fade(500, 0, 0, 0, false, (_camera: any, progress: number) => {
