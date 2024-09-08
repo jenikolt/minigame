@@ -39,12 +39,14 @@ export class GameWin extends Phaser.Scene {
     this.load.image("meme22", "src/assets/memes/meme22.jpg");
     this.load.image("meme23", "src/assets/memes/meme23.jpg");
     this.load.image("meme24", "src/assets/memes/meme24.jpg");
+    this.load.audio('winSound', 'src/assets/winSound.mp3');
   }
 
   create() {
     this.add.image(505, 284, "pub").setDisplaySize(1010, 568);
     this.add.image(505, 54, "gameWin").setDisplaySize(300, 50);
 
+    this.sound.add('winSound').setVolume(0.2).play();
     let memeCount = 1;
     this.currentMeme = this.add.image(505, 304, 'meme1').setScale(0.3);
 
