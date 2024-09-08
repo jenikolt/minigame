@@ -2,6 +2,7 @@ import './style.css'
 import Phaser from 'phaser'
 import { CharacterSelection } from './CharacterSelection'
 import { GameScene } from './GameScene'
+import { GameOver } from './GameOver';
 
 const config = {
   type: Phaser.AUTO,
@@ -15,7 +16,7 @@ const config = {
           debug: false
       }
   },
-  scene: [CharacterSelection, GameScene]
+  scene: [CharacterSelection, GameScene, GameOver]
 };
 
 new Phaser.Game(config);
