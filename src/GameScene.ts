@@ -28,11 +28,14 @@ export class GameScene extends Phaser.Scene {
         this.load.image('bottle', 'src/assets/pivo1.png');
         this.load.image('brokenBottle', 'src/assets/pivo5.png');
         this.load.image('brokenBottleBlazer', 'src/assets/crushedblazer.png');
+        this.load.image('brokenBottleBlazer', 'src/assets/crushedblazer.png');
         this.load.image('greenBottle', 'src/assets/pivo2.png');
+        this.load.image('blackBottle', 'src/assets/blazer_.png');
         this.load.image('blackBottle', 'src/assets/blazer_.png');
         this.load.image('burger', 'src/assets/burger.png');
         this.load.audio('bottleBreak', 'src/assets/PullBottle.mp3');
         this.load.audio('bottleCatch', 'src/assets/PullOut.mp3');
+        this.load.spritesheet( this.keySprite, `src/assets/${this.keySprite}.png`, { frameWidth: 211, frameHeight: 199 });
         this.load.spritesheet( this.keySprite, `src/assets/${this.keySprite}.png`, { frameWidth: 211, frameHeight: 199 });
         this.load.spritesheet('fillcup', 'src/assets/fillcup.png', { frameWidth: 370, frameHeight: 595 });
         this.load.spritesheet('progress', 'src/assets/progress.png', { frameWidth: 370, frameHeight: 595 });
@@ -52,6 +55,7 @@ export class GameScene extends Phaser.Scene {
         this.player.setCollideWorldBounds(true);
   
         this.anims.create({
+            key: 'turn',
             key: 'turn',
             frames: this.anims.generateFrameNumbers(this.keySprite, { start: 0, end: 3 }),
             frameRate: 10,
@@ -76,10 +80,16 @@ export class GameScene extends Phaser.Scene {
         this.missedBottleImages = [];
         for (let i = 0; i < 3; i++) {
             this.missedBottleImages.push(this.add.image(50, 250 - i * 50, 'burger').setScale(0.5));
+            this.missedBottleImages.push(this.add.image(50, 250 - i * 50, 'burger').setScale(0.5));
         }
   
         this.input.on('pointermove', (pointer: { x: number; }) => {    
             if (this.player.x < pointer.x) {
+                this.player.anims.play('turn', this);
+                this.player.setFlipX(false);
+            } else {
+                this.player.anims.play('turn', this);
+                this.player.setFlipX(true);
                 this.player.anims.play('turn', this);
                 this.player.setFlipX(false);
             } else {
@@ -163,6 +173,9 @@ export class GameScene extends Phaser.Scene {
                 console.error('Error playing bottleBreakSound:', error);
             }
         }
+
+        const brokenBottleType = bottle.getData('type') === 'loss' ? 'brokenBottleBlazer' : 'brokenBottle';
+        const brokenBottle = this.add.image(bottle.x, 560, brokenBottleType).setScale(0.5).setAngle(Phaser.Math.Between(0, 180));    
 
         const brokenBottleType = bottle.getData('type') === 'loss' ? 'brokenBottleBlazer' : 'brokenBottle';
         const brokenBottle = this.add.image(bottle.x, 560, brokenBottleType).setScale(0.5).setAngle(Phaser.Math.Between(0, 180));    
