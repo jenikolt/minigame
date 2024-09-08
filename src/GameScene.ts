@@ -44,7 +44,8 @@ export class GameScene extends Phaser.Scene {
         this.add.image(505, 284, 'pub').setDisplaySize(1010, 568);
         this.score = 0;
         this.floor = this.physics.add.staticBody(0, 560, 1010, 8);
-        this.fillcup = this.add.sprite(900, 350, 'fillcup').setScale(0.5);
+        this.fillcup = this.add.sprite(900, 200, 'fillcup').setScale(0.5);
+        
         this.player = this.physics.add.sprite(400, 550, this.keySprite).setScale(0.7);
         this.player.setCollideWorldBounds(true);
   
