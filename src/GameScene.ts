@@ -185,5 +185,13 @@ export class GameScene extends Phaser.Scene {
                 }
             });
         }
+
+        if (message === 'win') {
+            this.cameras.main.fade(300, 0, 0, 0, false, (_camera: any, progress: number) => {
+                if (progress === 1) {
+                    this.scene.start('GameWin');
+                }
+            });
+        }
     }
   }
