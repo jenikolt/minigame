@@ -25,11 +25,10 @@ export class GameScene extends Phaser.Scene {
   
     preload() {
         this.load.image('pub', 'src/assets/bg.png');
-        this.load.image('bottle', 'src/assets/pivo1.png');
+        this.load.image('bottle_normal', 'src/assets/pivo1.png');
         this.load.image('brokenBottle', 'src/assets/pivo5.png');
         this.load.image('brokenBottleBlazer', 'src/assets/crushedblazer.png');
-        this.load.image('greenBottle', 'src/assets/pivo2.png');
-        this.load.image('blackBottle', 'src/assets/blazer_.png');
+        this.load.image('bottle_loss', 'src/assets/blazer_.png');
         this.load.image('burger', 'src/assets/burger.png');
         this.load.audio('bottleBreak', 'src/assets/PullBottle.mp3');
         this.load.audio('bottleCatch', 'src/assets/PullOut.mp3');
@@ -68,6 +67,12 @@ export class GameScene extends Phaser.Scene {
             callbackScope: this,
             loop: true
         });
+        this.time.addEvent({
+            delay: Phaser.Math.Between(1500, 3500),
+            callback: this.dropBottle,
+            callbackScope: this,
+            loop: true
+        });
   
         this.physics.add.overlap(this.player, this.bottles, this.collectBottle, undefined, this);
         this.physics.add.overlap(this.floor, this.bottles, this.bottleHitGround, undefined, this);
@@ -89,7 +94,6 @@ export class GameScene extends Phaser.Scene {
             this.player.x = Phaser.Math.Clamp(pointer.x, 0, 800);
         });
   
-        // Initialize sound with error handling
         try {
             this.bottleBreakSound = this.sound.add('bottleBreak');
             this.bottleCatchSound = this.sound.add('bottleCatch');
@@ -105,17 +109,11 @@ export class GameScene extends Phaser.Scene {
         const bottleType = Math.random();
         let bottle;
   
+        const typebottle = bottleType < 0.1 ? 'bottle_loss' : 'bottle_normal';
   
-        if (bottleType < 0.05) {
-            bottle = this.bottles.create(x, 0, 'greenBottle');
-            bottle.setData('type', 'victory');
-        } else if (bottleType < 0.1) {
-            bottle = this.bottles.create(x, 0, 'blackBottle');
-            bottle.setData('type', 'loss');
-        } else {
-            bottle = this.bottles.create(x, 0, 'bottle');
-            bottle.setData('type', 'normal');
-        }
+        bottle = this.bottles.create(x, 0, typebottle);
+        bottle.setData('type', typebottle);
+        
         const difficulty = this.score || 1;
   
         bottle.setScale(0.5);
@@ -126,7 +124,6 @@ export class GameScene extends Phaser.Scene {
     collectBottle(_player: any, bottle: any) {
         bottle.disableBody(true, true);
         
-        // Play sound with error handling
         if (this.bottleCatchSound) {
             try {
                 this.bottleCatchSound.play();
@@ -135,9 +132,7 @@ export class GameScene extends Phaser.Scene {
             }
         }
   
-        if (bottle.getData('type') === 'victory') {
-            this.endGame('win');
-        } else if (bottle.getData('type') === 'loss') {
+        if (bottle.getData('type') === 'bottle_loss') {
             this.endGame('loss');
         } else {
             this.score++;
@@ -151,7 +146,6 @@ export class GameScene extends Phaser.Scene {
     bottleHitGround(_player: any, bottle: any) {
         bottle.disableBody(true, true);
         
-        // Play sound with error handling
         if (this.bottleBreakSound) {
             try {
                 this.bottleBreakSound.play();
@@ -160,15 +154,17 @@ export class GameScene extends Phaser.Scene {
             }
         }
 
-        const brokenBottleType = bottle.getData('type') === 'loss' ? 'brokenBottleBlazer' : 'brokenBottle';
+        const brokenBottleType = bottle.getData('type') === 'bottle_loss' ? 'brokenBottleBlazer' : 'brokenBottle';
         const brokenBottle = this.add.image(bottle.x, 560, brokenBottleType).setScale(0.5).setAngle(Phaser.Math.Between(0, 180));    
         this.brokenBottles.add(brokenBottle);
   
-        this.missedBottles++;
-        if (this.missedBottles <= 3) {
-            this.missedBottleImages[this.missedBottles - 1].setAlpha(0.2);
+        if (bottle.getData('type') !== 'bottle_loss') {
+            this.missedBottles++;
+            if (this.missedBottles <= 3) {
+                this.missedBottleImages[this.missedBottles - 1].setAlpha(0.2);
+            }
         }
-  
+        
         if (this.missedBottles >= 3) {
             this.endGame('loss');
         }
