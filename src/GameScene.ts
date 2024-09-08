@@ -28,17 +28,14 @@ export class GameScene extends Phaser.Scene {
         this.load.image('bottle', 'src/assets/pivo1.png');
         this.load.image('brokenBottle', 'src/assets/pivo5.png');
         this.load.image('brokenBottleBlazer', 'src/assets/crushedblazer.png');
-        this.load.image('brokenBottleBlazer', 'src/assets/crushedblazer.png');
         this.load.image('greenBottle', 'src/assets/pivo2.png');
-        this.load.image('blackBottle', 'src/assets/blazer_.png');
         this.load.image('blackBottle', 'src/assets/blazer_.png');
         this.load.image('burger', 'src/assets/burger.png');
         this.load.audio('bottleBreak', 'src/assets/PullBottle.mp3');
         this.load.audio('bottleCatch', 'src/assets/PullOut.mp3');
         this.load.spritesheet( this.keySprite, `src/assets/${this.keySprite}.png`, { frameWidth: 211, frameHeight: 199 });
-        this.load.spritesheet( this.keySprite, `src/assets/${this.keySprite}.png`, { frameWidth: 211, frameHeight: 199 });
         this.load.spritesheet('fillcup', 'src/assets/fillcup.png', { frameWidth: 370, frameHeight: 595 });
-        this.load.spritesheet('progress', 'src/assets/progress.png', { frameWidth: 370, frameHeight: 595 });
+        this.load.image('progress', 'src/assets/progress.png');
     }
   
     setFillCup() {
@@ -50,12 +47,11 @@ export class GameScene extends Phaser.Scene {
         this.score = 0;
         this.floor = this.physics.add.staticBody(0, 560, 1010, 8);
         this.fillcup = this.add.sprite(900, 200, 'fillcup').setScale(0.3);
-        this.progress = this.add.sprite(900, 300, 'progress').setScale(0.5);
+        this.progress = this.add.image(900, 300, 'progress').setScale(0.4);
         this.player = this.physics.add.sprite(400, 550, this.keySprite).setScale(0.7);
         this.player.setCollideWorldBounds(true);
   
         this.anims.create({
-            key: 'turn',
             key: 'turn',
             frames: this.anims.generateFrameNumbers(this.keySprite, { start: 0, end: 3 }),
             frameRate: 10,
@@ -80,16 +76,10 @@ export class GameScene extends Phaser.Scene {
         this.missedBottleImages = [];
         for (let i = 0; i < 3; i++) {
             this.missedBottleImages.push(this.add.image(50, 250 - i * 50, 'burger').setScale(0.5));
-            this.missedBottleImages.push(this.add.image(50, 250 - i * 50, 'burger').setScale(0.5));
         }
   
         this.input.on('pointermove', (pointer: { x: number; }) => {    
             if (this.player.x < pointer.x) {
-                this.player.anims.play('turn', this);
-                this.player.setFlipX(false);
-            } else {
-                this.player.anims.play('turn', this);
-                this.player.setFlipX(true);
                 this.player.anims.play('turn', this);
                 this.player.setFlipX(false);
             } else {
@@ -108,10 +98,6 @@ export class GameScene extends Phaser.Scene {
             this.bottleBreakSound = null;
             this.bottleCatchSound = null;
         }
-    }
-  
-    update() {
-          // this.player.y = 540 + Math.sin(this.time.now / 200) * 2;
     }
   
     dropBottle() {
@@ -150,14 +136,14 @@ export class GameScene extends Phaser.Scene {
         }
   
         if (bottle.getData('type') === 'victory') {
-            this.endGame('You Win!');
+            this.endGame('win');
         } else if (bottle.getData('type') === 'loss') {
-            this.endGame('Game Over');
+            this.endGame('loss');
         } else {
             this.score++;
             this.setFillCup();
             if (this.score >= 14) {
-              this.endGame('You Win!');
+              this.endGame('win');
             }
         }
     }
@@ -176,9 +162,6 @@ export class GameScene extends Phaser.Scene {
 
         const brokenBottleType = bottle.getData('type') === 'loss' ? 'brokenBottleBlazer' : 'brokenBottle';
         const brokenBottle = this.add.image(bottle.x, 560, brokenBottleType).setScale(0.5).setAngle(Phaser.Math.Between(0, 180));    
-
-        const brokenBottleType = bottle.getData('type') === 'loss' ? 'brokenBottleBlazer' : 'brokenBottle';
-        const brokenBottle = this.add.image(bottle.x, 560, brokenBottleType).setScale(0.5).setAngle(Phaser.Math.Between(0, 180));    
         this.brokenBottles.add(brokenBottle);
   
         this.missedBottles++;
@@ -187,25 +170,20 @@ export class GameScene extends Phaser.Scene {
         }
   
         if (this.missedBottles >= 3) {
-            this.endGame('Game Over');
+            this.endGame('loss');
         }
     }
   
-    endGame(message: string | string[]) {
+    endGame(message: 'loss' | 'win') {
         this.time.removeAllEvents();
         this.physics.pause();
-        this.add.text(400, 300, message, { fontSize: '64px', color: '#fff' }).setOrigin(0.5);
 
-        if (message === 'Game Over') {
-            this.scene.start('GameOver');
-        }
-  
-        this.time.delayedCall(10000, () => {
-            this.cameras.main.fade(500, 0, 0, 0, false, (_camera: any, progress: number) => {
+        if (message === 'loss') {
+            this.cameras.main.fade(300, 0, 0, 0, false, (_camera: any, progress: number) => {
                 if (progress === 1) {
-                    this.scene.start('CharacterSelection');
+                    this.scene.start('GameOver');
                 }
             });
-        });
+        }
     }
   }
